@@ -73,7 +73,7 @@ export const updateStory = async (req, res, next) => {
 
 export const deleteStory = async (req, res, next) => {
   try {
-    const { storyId } = req.body;
+    const storyId = req.params.id;
 
     const [existingStory] = await dbPool.query("SELECT * FROM Stories WHERE StoryID = ?", [storyId]);
 

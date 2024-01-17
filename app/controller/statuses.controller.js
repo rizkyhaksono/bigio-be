@@ -30,7 +30,8 @@ export const createStatus = async (req, res, next) => {
 
 export const updateStatus = async (req, res, next) => {
   try {
-    const { statusId, StatusName } = req.body;
+    const statusId = req.params.id;
+    const { StatusName } = req.body;
 
     const [existingStatus] = await dbPool.query("SELECT * FROM Statuses WHERE StatusID = ?", [statusId]);
 
@@ -54,14 +55,14 @@ export const updateStatus = async (req, res, next) => {
 
 export const deleteStatus = async (req, res, next) => {
   try {
-    const { statusId } = req.body;
+    const statusId = req.params.id;
 
     const [existingStatus] = await dbPool.query("SELECT * FROM Statuses WHERE StatusID = ?", [statusId]);
 
     if (existingStatus.length === 0) {
       return res.status(404).json({
         status: 404,
-        message: "Status not found",
+        message: ["Status not found", statusId],
       });
     }
 

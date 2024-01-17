@@ -9,11 +9,12 @@ const router = Router({ strict: true });
 router.get("/stories", getStories);
 router.post("/stories", createStory);
 router.put("/stories/:id", updateStory);
+router.delete("/stories/:id", deleteStory);
 
 router.get("/status", getStatus);
 router.post("/status", createStatus);
-router.put("/status", updateStatus);
-router.delete("/status", deleteStatus);
+router.put("/status/:id", updateStatus);
+router.delete("/status/:id", deleteStatus);
 
 router.get("/tags", getTags);
 router.post("/tags", createTag);
