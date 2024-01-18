@@ -15,10 +15,10 @@ export const getStoryTags = async (req, res, next) => {
 
 export const createStoryTag = async (req, res, next) => {
   try {
-    const { storyId, tagId } = req.body;
+    const { story_id, tag_id } = req.body;
 
-    // check storyId
-    const [existingStory] = await dbPool.query("SELECT * FROM Stories WHERE StoryID = ?", [storyId]);
+    // check story_id
+    const [existingStory] = await dbPool.query("SELECT * FROM Stories WHERE story_id = ?", [story_id]);
 
     if (existingStory.length === 0) {
       return res.status(404).json({
@@ -27,8 +27,8 @@ export const createStoryTag = async (req, res, next) => {
       });
     }
 
-    // check tagId
-    const [existingTag] = await dbPool.query("SELECT * FROM Tags WHERE TagID = ?", [tagId]);
+    // check tag_id
+    const [existingTag] = await dbPool.query("SELECT * FROM Tags WHERE tag_id = ?", [tag_id]);
 
     if (existingTag.length === 0) {
       return res.status(404).json({
@@ -37,7 +37,7 @@ export const createStoryTag = async (req, res, next) => {
       });
     }
 
-    const [createdStoryTag] = await dbPool.query("INSERT INTO StoryTags (StoryID, TagID) VALUES (?, ?)", [storyId, tagId]);
+    const [createdStoryTag] = await dbPool.query("INSERT INTO StoryTags (story_id, tag_id) VALUES (?, ?)", [story_id, tag_id]);
 
     res.status(201).json({
       status: 201,
@@ -48,11 +48,13 @@ export const createStoryTag = async (req, res, next) => {
   }
 };
 
-export const deleteStoryTag = async (req, res, next) => {
+export const updateStoryTag = async (req, res, next) => {
   try {
-    const { storyId, tagId } = req.body;
+    const { tagId } = req.params;
+    const { storyId, newTagId } = req.body;
 
-    const [existingStoryTag] = await dbPool.query("SELECT * FROM StoryTags WHERE StoryID = ? AND TagID = ?", [storyId, tagId]);
+    // Check if the story tag exists
+    const [existingStoryTag] = await dbPool.query("SELECT * FROM StoryTags WHERE story_id = ? AND tag_id = ?", [storyId, tagId]);
 
     if (existingStoryTag.length === 0) {
       return res.status(404).json({
@@ -61,7 +63,42 @@ export const deleteStoryTag = async (req, res, next) => {
       });
     }
 
-    await dbPool.query("DELETE FROM StoryTags WHERE StoryID = ? AND TagID = ?", [storyId, tagId]);
+    // Check if the new tag exists
+    const [existingNewTag] = await dbPool.query("SELECT * FROM Tags WHERE tag_id = ?", [newTagId]);
+
+    if (existingNewTag.length === 0) {
+      return res.status(404).json({
+        status: 404,
+        message: "New tag not found",
+      });
+    }
+
+    await dbPool.query("UPDATE StoryTags SET tag_id = ? WHERE story_id = ? AND tag_id = ?", [newTagId, storyId, tagId]);
+
+    res.json({
+      status: 200,
+      message: "Story tag updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteStoryTag = async (req, res, next) => {
+  try {
+    const { tagId } = req.params;
+    const { storyId } = req.body;
+
+    const [existingStoryTag] = await dbPool.query("SELECT * FROM StoryTags WHERE story_id = ? AND tag_id = ?", [storyId, tagId]);
+
+    if (existingStoryTag.length === 0) {
+      return res.status(404).json({
+        status: 404,
+        message: "Story tag not found",
+      });
+    }
+
+    await dbPool.query("DELETE FROM StoryTags WHERE story_id = ? AND tag_id = ?", [storyId, tagId]);
 
     res.json({
       status: 200,

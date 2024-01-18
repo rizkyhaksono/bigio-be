@@ -15,9 +15,9 @@ export const getStatus = async (req, res, next) => {
 
 export const createStatus = async (req, res, next) => {
   try {
-    const { statusID, StatusName } = req.body;
+    const { status_id, status_name } = req.body;
 
-    const [createdStatus] = await dbPool.query("INSERT INTO Statuses (StatusID, StatusName) VALUES (?, ?)", [statusID, StatusName]);
+    const [createdStatus] = await dbPool.query("INSERT INTO Statuses (status_id, status_name) VALUES (?, ?)", [status_id, status_name]);
 
     res.status(201).json({
       status: 201,
@@ -33,7 +33,7 @@ export const updateStatus = async (req, res, next) => {
     const statusId = req.params.id;
     const { StatusName } = req.body;
 
-    const [existingStatus] = await dbPool.query("SELECT * FROM Statuses WHERE StatusID = ?", [statusId]);
+    const [existingStatus] = await dbPool.query("SELECT * FROM Statuses WHERE status_id = ?", [statusId]);
 
     if (existingStatus.length === 0) {
       return res.status(404).json({
@@ -42,7 +42,7 @@ export const updateStatus = async (req, res, next) => {
       });
     }
 
-    await dbPool.query("UPDATE Statuses SET StatusName = ? WHERE StatusID = ?", [StatusName, statusId]);
+    await dbPool.query("UPDATE Statuses SET StatusName = ? WHERE status_id = ?", [StatusName, statusId]);
 
     res.json({
       status: 200,
@@ -57,7 +57,7 @@ export const deleteStatus = async (req, res, next) => {
   try {
     const statusId = req.params.id;
 
-    const [existingStatus] = await dbPool.query("SELECT * FROM Statuses WHERE StatusID = ?", [statusId]);
+    const [existingStatus] = await dbPool.query("SELECT * FROM Statuses WHERE status_id = ?", [statusId]);
 
     if (existingStatus.length === 0) {
       return res.status(404).json({
@@ -66,7 +66,7 @@ export const deleteStatus = async (req, res, next) => {
       });
     }
 
-    await dbPool.query("DELETE FROM Statuses WHERE StatusID = ?", [statusId]);
+    await dbPool.query("DELETE FROM Statuses WHERE status_id = ?", [statusId]);
 
     res.json({
       status: 200,

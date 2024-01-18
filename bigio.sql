@@ -1,164 +1,55 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: db
--- Waktu pembuatan: 17 Jan 2024 pada 13.51
--- Versi server: 8.1.0
--- Versi PHP: 8.2.10
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `bigio`
---
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `Statuses`
---
-
 CREATE TABLE `Statuses` (
-  `StatusID` int NOT NULL,
-  `StatusName` enum('Publish','Draft') NOT NULL
+  `status_id` int NOT NULL,
+  `status_name` enum('Publish','Draft') NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data untuk tabel `Statuses`
---
-
-INSERT INTO `Statuses` (`StatusID`, `StatusName`) VALUES
-(1, 'Draft');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `Stories`
---
 
 CREATE TABLE `Stories` (
-  `StoryID` int NOT NULL,
-  `Title` varchar(255) NOT NULL,
-  `Author` varchar(255) NOT NULL,
-  `Category` enum('Financial','Technology','Health') NOT NULL,
-  `StatusID` int DEFAULT NULL
+  `story_id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `author` varchar(255) NOT NULL,
+  `synopsis` LONGTEXT NOT NULL,
+  `category` enum('Financial','Technology','Health') NOT NULL,
+  `status_id` int DEFAULT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`story_id`),
+  KEY `status_id` (`status_id`),
+  CONSTRAINT `Stories_ibfk_1` FOREIGN KEY (`status_id`) REFERENCES `Statuses` (`status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data untuk tabel `Stories`
---
-
-INSERT INTO `Stories` (`StoryID`, `Title`, `Author`, `Category`, `StatusID`) VALUES
-(1, 'Test 2', 'Test 2', 'Technology', 1);
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `StoryTags`
---
-
-CREATE TABLE `StoryTags` (
-  `StoryID` int NOT NULL,
-  `TagID` int NOT NULL
+CREATE TABLE `Chapter` (
+  `chapter_id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `story` LONGTEXT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `story_id` int NOT NULL,
+  PRIMARY KEY (`chapter_id`),
+  KEY `story_id` (`story_id`),
+  CONSTRAINT `Chapter_ibfk_1` FOREIGN KEY (`story_id`) REFERENCES `Stories` (`story_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `Tags`
---
 
 CREATE TABLE `Tags` (
-  `TagID` int NOT NULL,
-  `TagName` varchar(50) NOT NULL
+  `tag_id` int NOT NULL AUTO_INCREMENT,
+  `tag_name` varchar(50) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data untuk tabel `Tags`
---
+CREATE TABLE `StoryTags` (
+  `story_id` int NOT NULL,
+  `tag_id` int NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`story_id`,`tag_id`),
+  KEY `tag_id` (`tag_id`),
+  CONSTRAINT `StoryTags_ibfk_1` FOREIGN KEY (`story_id`) REFERENCES `Stories` (`story_id`),
+  CONSTRAINT `StoryTags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `Tags` (`tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `Tags` (`TagID`, `TagName`) VALUES
-(1, 'Test tag');
-
---
--- Indexes for dumped tables
---
-
---
--- Indeks untuk tabel `Statuses`
---
-ALTER TABLE `Statuses`
-  ADD PRIMARY KEY (`StatusID`);
-
---
--- Indeks untuk tabel `Stories`
---
-ALTER TABLE `Stories`
-  ADD PRIMARY KEY (`StoryID`),
-  ADD KEY `StatusID` (`StatusID`);
-
---
--- Indeks untuk tabel `StoryTags`
---
-ALTER TABLE `StoryTags`
-  ADD PRIMARY KEY (`StoryID`,`TagID`),
-  ADD KEY `TagID` (`TagID`);
-
---
--- Indeks untuk tabel `Tags`
---
-ALTER TABLE `Tags`
-  ADD PRIMARY KEY (`TagID`);
-
---
--- AUTO_INCREMENT untuk tabel yang dibuang
---
-
---
--- AUTO_INCREMENT untuk tabel `Statuses`
---
-ALTER TABLE `Statuses`
-  MODIFY `StatusID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT untuk tabel `Stories`
---
-ALTER TABLE `Stories`
-  MODIFY `StoryID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT untuk tabel `Tags`
---
-ALTER TABLE `Tags`
-  MODIFY `TagID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
---
-
---
--- Ketidakleluasaan untuk tabel `Stories`
---
-ALTER TABLE `Stories`
-  ADD CONSTRAINT `Stories_ibfk_1` FOREIGN KEY (`StatusID`) REFERENCES `Statuses` (`StatusID`);
-
---
--- Ketidakleluasaan untuk tabel `StoryTags`
---
-ALTER TABLE `StoryTags`
-  ADD CONSTRAINT `StoryTags_ibfk_1` FOREIGN KEY (`StoryID`) REFERENCES `Stories` (`StoryID`),
-  ADD CONSTRAINT `StoryTags_ibfk_2` FOREIGN KEY (`TagID`) REFERENCES `Tags` (`TagID`);
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

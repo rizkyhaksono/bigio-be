@@ -15,9 +15,9 @@ export const getTags = async (req, res, next) => {
 
 export const createTag = async (req, res, next) => {
   try {
-    const { tagID, TagName } = req.body;
+    const { tag_id, tag_name } = req.body;
 
-    const [createdTag] = await dbPool.query("INSERT INTO Tags (TagID, TagName) VALUES (?, ?)", [tagID, TagName]);
+    const [createdTag] = await dbPool.query("INSERT INTO Tags (tag_id, tag_name) VALUES (?, ?)", [tag_id, tag_name]);
 
     res.status(201).json({
       status: 201,
@@ -25,5 +25,38 @@ export const createTag = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+export const updateTag = async (req, res, next) => {
+  try {
+    const { tagId } = req.params;
+    const { tagName } = req.body;
+
+    const [result] = await pool.query("UPDATE Tags SET tag_name = ? WHERE tag_id = ?", [tagName, tagId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Tag not found" });
+    }
+
+    res.json({ message: "Tag updated successfully" });
+  } catch (error) {
+    handleMySQLError(res, error);
+  }
+};
+
+export const deleteTag = async (req, res, next) => {
+  try {
+    const { tagId } = req.params;
+
+    const [result] = await pool.query("DELETE FROM Tags WHERE tag_id = ?", [tagId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Tag not found" });
+    }
+
+    res.json({ message: "Tag deleted successfully" });
+  } catch (error) {
+    handleMySQLError(res, error);
   }
 };
