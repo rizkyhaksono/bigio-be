@@ -1,32 +1,45 @@
-# BigIO Backend Submission
+# BigIO Backend
 
 ## Introduction
 
-This repo made for submission backend BigIO Internet Fullstack Developer
+This repo made for Backend Project BigIO Fullstack Developer intern
 
 ## Table of Contents
 
-- Introduction
-- Features
-- Libraries
-- Project Structure
-- Web Link
+- [Introduction](#introduction)
+- [Features](#features)
+- [Libraries](#libraries)
+- [Project Structure](#project-structure)
+- [Website URL](#website-url)
 
 ## Features
 
-- Express.js
-- Railway
-- MySQL
-- Jest
+- Chapter
+- Status
+- Story
+- StoryTag
+- Tags
+
+## Libraries
+
+- Express
+- cors
+- dotenv
+- jest
+- supertest
+- multer
+- mysql2
+- railway
 
 ## Project Structure
 
-- app
-  - controller
-  - lib
-  - routes
-- app.js
+- `app`
+  - `controller`
+  - `lib`
+  - `routes`
+- `app`
+- `.env.example`
 
 ## Website URL
 
-https://bigio-be-production.up.railway.app/api
+<https://bigio-be-production.up.railway.app/>
